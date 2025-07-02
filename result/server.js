@@ -17,9 +17,18 @@ io.on('connection', function (socket) {
   });
 });
 
-var pool = new Pool({
-  connectionString: 'postgres://postgres:postgres@db/postgres'
-});
+// var pool = new Pool({
+//   connectionString: 'postgres://postgres:postgres@db/postgres'
+// });
+const user = process.env.POSTGRES_USER || 'postgres';
+const password = process.env.POSTGRES_PASSWORD || 'postgres';
+const host = process.env.POSTGRES_HOST || 'db';
+const database = process.env.POSTGRES_DB || 'postgres';
+
+const connectionString = `postgres://${user}:${password}@${host}/${database}`;
+
+var pool = new Pool({ connectionString });
+
 
 async.retry(
   {times: 1000, interval: 1000},
