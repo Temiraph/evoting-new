@@ -44,7 +44,7 @@ jobs:
               context: ./result
               file: ./result/Dockerfile
               push: true
-              tags: ${{ secrets.AWS_ECR_REGISTRY }}/result-app:${{ github.sha }}
+              tags: ${{ secrets.AWS_ECR_REGISTRY }}/result:${{ github.sha }}
               
              
 
