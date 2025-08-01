@@ -1,0 +1,41 @@
+name: build and push result image
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - 'result/**'
+            - '.github/workflows/pipeline.yaml'
+    pull_request:
+        branches:
+            - main
+        paths:
+            - 'result/**'
+            - '.github/workflows/pipeline.yaml'
+
+jobs:
+    build_image:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Chceckout Code
+          uses: actions/checkout@v2
+        
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v1
+
+        - name: log in to Docker Hub
+          uses: docker/login-action@v1
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+        - name: build and push result image
+          uses: docker/build-push-action@v2
+          with:
+            context: ./result
+            file: ./result/Dockerfile
+            push: true
+            tags: ${{ secrets.DOCKER_USERNAME }}/result-app:latest
+            
+
+
