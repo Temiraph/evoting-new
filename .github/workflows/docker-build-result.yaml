@@ -17,7 +17,7 @@ permissions:
   id-token: write
   contents: read
 
-  
+
 jobs:
     build_image:
         runs-on: ubuntu-latest
@@ -45,9 +45,7 @@ jobs:
               file: ./result/Dockerfile
               push: true
               tags: ${{ secrets.AWS_ECR_REGISTRY }}/result-app:${{ github.sha }}
-              cache-from: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/result
-              cache-to: type=registry,ref=${{ secrets.AWS_ECR_REGISTRY }}/result,mode=max
-     
+              
              
 
 
