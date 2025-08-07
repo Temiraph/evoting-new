@@ -68,10 +68,10 @@ jobs:
           docker build -t temple011/$IMAGE_NAME:$SHA_TAG ./worker
 
           # Tag for Docker Hub
-          docker tag $IMAGE_NAME:$SHA_TAG ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$SHA_TAG
+          docker tag temple011/$IMAGE_NAME:$SHA_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA_TAG
 
           # Tag for AWS ECR
-          docker tag $IMAGE_NAME:$SHA_TAG ${{ steps.login-ecr.outputs.registry }}/$IMAGE_NAME:$SHA_TAG
+          docker tag temple011/$IMAGE_NAME:$SHA_TAG ${{ steps.login-ecr.outputs.registry }}/$IMAGE_NAME:$SHA_TAG
 
           # Push to Docker Hub
           docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$SHA_TAG
