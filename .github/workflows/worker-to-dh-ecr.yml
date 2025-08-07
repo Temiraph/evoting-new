@@ -5,13 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'result/**'
+      - 'worker/**'
       - '.github/workflows/worker-to-dh-ecr.yml'
   pull_request:
     branches:
       - main
     paths:
-      - 'result/**'
+      - 'worker/**'
       - '.github/workflows/worker-to-dh-ecr.yml'
 
 jobs:
