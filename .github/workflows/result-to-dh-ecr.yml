@@ -45,7 +45,7 @@ jobs:
           context: ./result
           push: true
           tags: 
-            ${{ secrets.DOCKERHUB_USERNAME }}result-repo:${{ env.SHORT_SHA }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/result-repo:${{ env.SHORT_SHA }}
 
   # build_to_ECR:
   # name: build and push to to ECR
