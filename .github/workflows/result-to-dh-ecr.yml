@@ -1,4 +1,4 @@
-name: Build and Push result Image to docker hub
+name: Build and Push result Image to docker hub and ECR
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
 
 jobs:
   build_to_docker_hub:
-   name: Build and Push to Docker Hub
+   name: Build and Push to Docker 
    runs-on: ubuntu-latest
 
    steps:
@@ -46,36 +46,44 @@ jobs:
           push: true
           tags: 
             ${{ secrets.DOCKERHUB_USERNAME }}/result-repo:${{ env.SHORT_SHA }}
-
-  # build_to_ECR:
-  # name: build and push to to ECR
-   #runs-on: ubuntu-latest
-   #steps:
-    # Step 1: Checkout repo code
-  #- name: Checkout code
-   #  uses: actions/checkout@v3
+    
+  build_to_ECR:
+       name: Build and Push to Docker Hub
+       runs-on: ubuntu-latest
+       steps:
+    
+   # Step 1: Checkout repo code
+        - name: Checkout code
+          uses: actions/checkout@v3
           
-    # Step 2: Configure AWS credentials
-   #- name: Configure AWS credentials
-    # uses: aws-actions/configure-aws-credentials@v4
-     #with:
-      #  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-       # aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #aws-region: us-east-1  
+   # Step 2: Configure AWS credentials
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+      
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: us-east-1  
 
       # Step 3: Log in to Amazon ECR
-   #- name: Log in to Amazon ECR
-    # id: login-ecr
-     #uses: aws-actions/amazon-ecr-login@v2
+        - name: Log in to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
 
-      # Step 6: Set short SHA for tagging
-   #- name: Set short SHA
-    # id: vars
-   #  run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+      # Step 4: Set short SHA for tagging
+        - name: Set short SHA
+          id: vars
+          run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
-      # Step 7: Build and push image
-      #- name: Build and push image
-       # run:  |
-      
+     # Step 5: Build and push result image
+        - name: Build and push Docker image
+          env:
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY: result-repo
+            IMAGE_TAG: ${{ steps.vars.outputs.short_sha }}
+          run: |
+           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
           
