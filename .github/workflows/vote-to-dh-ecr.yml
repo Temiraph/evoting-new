@@ -27,12 +27,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: List repository files for debugging
-        run: |
-          echo "Listing root directory"
-          ls -la
-          echo "Listing vote directory"
-          ls -la ./vote/Dockerfile
+     
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
