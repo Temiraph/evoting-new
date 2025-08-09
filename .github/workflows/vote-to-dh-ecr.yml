@@ -36,6 +36,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v6
         with:
+          context: ./vote
           push: true
           tags: temple011/vote-repo:latest
 
