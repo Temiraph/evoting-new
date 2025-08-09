@@ -32,7 +32,7 @@ jobs:
           echo "Listing root directory"
           ls -la
           echo "Listing vote directory"
-          ls -la ./vote
+          ls -la ./vote/Dockerfile
           
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
