@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'vote/**'
-      - '.github/workflows/vote-to-ecr.yml'
+      - '.github/workflows/vote-to-dh-ecr.yml'
 
   pull_request:
       branches:
