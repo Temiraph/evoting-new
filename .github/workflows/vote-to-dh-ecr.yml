@@ -39,7 +39,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./vote
-          dockerfile: ./vote/Dockerfile
+          file: ./vote/Dockerfile
           push: true
           tags: temple011/vote-repo:latest
 
