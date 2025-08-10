@@ -35,11 +35,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Verify GitHub workspace location
-        run: |
-         echo "GitHub workspace is located at: $GITHUB_WORKSPACE"
-         ls -al $GITHUB_WORKSPACE  # List the contents of the GitHub workspace (root directory)
-         ls -al $GITHUB_WORKSPACE/vote  # List the contents of the 'vote' directory 
          
       - name: Build and push
         uses: docker/build-push-action@v5
