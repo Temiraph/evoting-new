@@ -35,8 +35,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./vote
-          file: ./vote/Dockerfile
+          context: ${{ github.workspace }}/vote
+          file: ${{ github.workspace }}/vote/Dockerfile
           push: true
           tags: temple011/vote-repo:latest
 
