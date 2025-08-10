@@ -36,11 +36,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: List directory structure from top level
-       run: |
-        echo "Listing 'work' directory"
-        ls -al /home/runner/work  # This lists everything in the 'work' directory (the top level of the GitHub runner's workspace)
-        echo "Listing the 'evoting-new' directory"
-        ls -al /home/runner/work/evoting-new  # This lists the contents of the 'evoting-new' folder
+        run: |
+         echo "Listing 'work' directory"
+         ls -al /home/runner/work  # This lists everything in the 'work' directory (the top level of the GitHub runner's workspace)
+         echo "Listing the 'evoting-new' directory"
+         ls -al /home/runner/work/evoting-new  # This lists the contents of the 'evoting-new' folder
 
       - name: List directory structure
         run: |
