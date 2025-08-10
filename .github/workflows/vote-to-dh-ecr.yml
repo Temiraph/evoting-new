@@ -41,10 +41,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-         context: ./vote  # Use the relative path from the root of the repository
-         file: ./vote/Dockerfile  # Specify the Dockerfile inside the vote folder
-         push: true
-         tags: temple011/vote-repo:latest
+          context: ./vote  # Path to the vote folder from the repository root
+          file: ./vote/Dockerfile  # Dockerfile inside the vote folder
+          push: true
+          tags: temple011/vote-repo:latest
 
 
 
