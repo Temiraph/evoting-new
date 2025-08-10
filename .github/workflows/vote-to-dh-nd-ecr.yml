@@ -31,20 +31,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-     # Debugging step to list the full path of the repository and the contents of the 'vote' directory
-      - name: List contents and verify path of vote directory
-        run: |
-          echo "Repository path: $GITHUB_WORKSPACE"  # Print the absolute path of the repo on the runner
-          echo "Listing the directory structure in the workspace:"
-          ls -al $GITHUB_WORKSPACE  # List the files in the root of the workspace
-          ls -al $GITHUB_WORKSPACE/evoting-new  # List the 'evoting-new' folder contents
-          ls -al $GITHUB_WORKSPACE/evoting-new/vote  # List the 'vote' folder contents
+
 
 
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}/evoting-new/vote  # Use the absolute path to 'vote' directory
-          file: ${{ github.workspace }}/evoting-new/vote/Dockerfile 
+          context: ${{ github.workspace }}/evoting-new/vote  # Full path to 'vote' directory considering the nested structure
+          file: ${{ github.workspace }}/evoting-new/vote/Dockerfile  # Full path to Dockerfile inside 'vote'
           push: true
           tags: temple011/vote-repo:latest
