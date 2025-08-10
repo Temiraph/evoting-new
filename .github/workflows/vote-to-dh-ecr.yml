@@ -35,25 +35,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: List directory structure from top level
+      - name: Verify GitHub workspace location
         run: |
-         echo "Listing 'work' directory"
-         ls -al /home/runner/work  # This lists everything in the 'work' directory (the top level of the GitHub runner's workspace)
-         echo "Listing the 'evoting-new' directory"
-         ls -al /home/runner/work/evoting-new  # This lists the contents of the 'evoting-new' folder
-
-      - name: List directory structure
-        run: |
-         echo "Listing the repository structure at the root of the repository:"
-         ls -al $GITHUB_WORKSPACE  # List files in the root directory
-         ls -al $GITHUB_WORKSPACE/vote  # List files in the vote folder
-
-      - name: List directory structure from root
-        run: |
-         echo "Listing root directory structure"
-         ls -al /home/runner/work  # List the 'work' directory to confirm repository structure
-         ls -al /home/runner/work/evoting-new  # List the 'evoting-new' folder to check the contents
-        
+         echo "GitHub workspace is located at: $GITHUB_WORKSPACE"
+         ls -al $GITHUB_WORKSPACE  # List the contents of the GitHub workspace (root directory)
+         ls -al $GITHUB_WORKSPACE/vote  # List the contents of the 'vote' directory 
+         
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
