@@ -34,14 +34,17 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: List directory contents
+        run: ls -al
         
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}/vote
-          file: ${{ github.workspace }}/vote/Dockerfile
-          push: true
-          tags: temple011/vote-repo:latest
+         context: ./vote  # Use the relative path from the root of the repository
+         file: ./vote/Dockerfile  # Specify the Dockerfile inside the vote folder
+         push: true
+         tags: temple011/vote-repo:latest
 
 
 
