@@ -41,8 +41,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}/vote  # Use absolute path to the vote folder
-          file: ${{ github.workspace }}/vote/Dockerfile  # Absolute path to Dockerfile inside the vote folder
+          context: vote  # Just the folder name, not the absolute path
+          file: vote/Dockerfile  # Dockerfile path relative to the root of the repository
           push: true
           tags: temple011/vote-repo:latest
 
