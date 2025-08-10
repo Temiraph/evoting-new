@@ -40,6 +40,12 @@ jobs:
          echo "Listing the repository structure at the root of the repository:"
          ls -al $GITHUB_WORKSPACE  # List files in the root directory
          ls -al $GITHUB_WORKSPACE/vote  # List files in the vote folder
+
+      - name: List directory structure from root
+        run: |
+         echo "Listing root directory structure"
+         ls -al /home/runner/work  # List the 'work' directory to confirm repository structure
+         ls -al /home/runner/work/evoting-new  # List the 'evoting-new' folder to check the contents
         
       - name: Build and push
         uses: docker/build-push-action@v5
