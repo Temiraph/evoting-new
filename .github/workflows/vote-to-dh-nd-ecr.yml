@@ -31,10 +31,15 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: List contents of vote directory
+        run: |
+         echo "Listing contents of vote directory:"
+         ls -al ${{ github.workspace }}/evoting-new/vote  # List files in the 'vote' folder
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./vote
-          file: ./vote/Dockerfile
+          context: ${{ github.workspace }}/evoting-new/vote  # Use the absolute path to 'vote' directory
+          file: ${{ github.workspace }}/evoting-new/vote/Dockerfile 
           push: true
           tags: temple011/vote-repo:latest
