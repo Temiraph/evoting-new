@@ -44,8 +44,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ${{ github.workspace }}/vote  # Use the path relative to the nested directory
-          file: ${{ github.workspace }}/vote/Dockerfile  # Dockerfile path inside the 'vote' folder
+          context: ${{ github.workspace }}/evoting-new/vote  # Adjusted path for the 'vote' directory
+          file: ${{ github.workspace }}/evoting-new/vote/Dockerfile  # Adjusted Dockerfile path
           push: true
           tags: temple011/vote-repo:latest
 
