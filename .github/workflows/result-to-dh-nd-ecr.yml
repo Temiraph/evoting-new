@@ -6,14 +6,14 @@ on:
       - main
     paths:
       - 'evoting-new/vote/**'  # Ensure this is relative to the root directory
-      - '.github/workflows/vote-to-dh-ecr.yml'
+      - '.github/workflows/vote-to-dh-nd-ecr.yml'
 
   pull_request:
     branches:
       - main
     paths:
       - 'evoting-new/vote/**'  # Ensure this is relative to the root directory
-      - '.github/workflows/vote-to-dh-ecr.yml'
+      - '.github/workflows/vote-to-dh-nd-ecr.yml'
 
 jobs:
   build_and_push_to_dockerhub:
