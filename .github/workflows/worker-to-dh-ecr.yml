@@ -1,37 +1,32 @@
-name: Build and Push worker Image to Dhub and ECR
+name: Build and Push worker Image to docker hub and ECR
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'worker/**'
+      - 'result/**'
       - '.github/workflows/worker-to-dh-ecr.yml'
   pull_request:
     branches:
       - main
     paths:
-      - 'worker/**'
+      - 'result/**'
       - '.github/workflows/worker-to-dh-ecr.yml'
 
 jobs:
-  build_image:
-    runs-on: ubuntu-latest
+  build_to_docker_hub:
+   name: Build and Push to Docker 
+   runs-on: ubuntu-latest
 
-    steps:
+   steps:
       # Step 1: Checkout repo code
       - name: Checkout code
         uses: actions/checkout@v3
         
-      # Step 2: Set up Docker Buildx
+         # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
-      # check secretes 
-      - name: Check secrets exist
-        run: |
-          if [ -z "${{ secrets.DOCKER_USERNAME }}" ]; then echo "❌ DOCKERHUB_USERNAME is missing"; else echo "✅ DOCKER_USERNAME is set"; fi
-          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then echo "❌ DOCKERHUB_TOKEN is missing"; else echo "✅ DOCKERHUB_TOKEN is set"; fi
 
       # Step 3: Log in to Docker Hub
       - name: Log in to Docker Hub
@@ -39,42 +34,54 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      # Step 4: Get the 7-character short SHA
+      - name: Get short SHA
+        run: echo "SHORT_SHA=$(git rev-parse --short=7 HEAD)" >> $GITHUB_ENV
 
-      # Step 4: Configure AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        # Step 5: Build and push Docker image from user-service folder
+      - name: Build and Push worker Docker image
+        uses: docker/build-push-action@v5
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1  
+          context: ./worker
+          push: true
+          tags: 
+            ${{ secrets.DOCKERHUB_USERNAME }}/worker-repo:${{ env.SHORT_SHA }}
+    
+  build_to_ECR:
+       name: Build and Push to ECR
+       runs-on: ubuntu-latest
+       steps:
+    
+   # Step 1: Checkout repo code
+        - name: Checkout code
+          uses: actions/checkout@v3
+          
+   # Step 2: Configure AWS credentials
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+      
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: eu-west-1  
 
-      # Step 5: Log in to Amazon ECR
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      # Step 3: Log in to Amazon ECR
+        - name: Log in to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
 
-      # Step 6: Set short SHA for tagging
-      - name: Set short SHA
-        id: vars
-        run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+      # Step 4: Set short SHA for tagging
+        - name: Set short SHA
+          id: vars
+          run: echo "short_sha=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
 
-      # Step 7: Build and push image
-      - name: Build and push image
-        run:  |
-          IMAGE_NAME=image-app
-          SHA_TAG=${{ steps.vars.outputs.short_sha }}
-
-          # Build the Docker image
-          docker build -t temple011/$IMAGE_NAME:$SHA_TAG ./worker
-
-          # Tag for Docker Hub
-          docker tag temple011/$IMAGE_NAME:$SHA_TAG ${{ secrets.DOCKERHUB_USERNAME }}/$IMAGE_NAME:$SHA_TAG
-
-          # Tag for AWS ECR
-          docker tag temple011/$IMAGE_NAME:$SHA_TAG ${{ steps.login-ecr.outputs.registry }}/$IMAGE_NAME:$SHA_TAG
-
-          # Push to Docker Hub
-          docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:$SHA_TAG
-
-          # Push to AWS ECR
-          docker push ${{ steps.login-ecr.outputs.registry }}/$IMAGE_NAME:$SHA_TAG
+     # Step 5: Build and push result image
+        - name: Build and push Docker image
+          env:
+            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+            ECR_REPOSITORY: worker-repo
+            IMAGE_TAG: ${{ steps.vars.outputs.short_sha }}
+          run: |
+           docker build -t $ECR_REPOSITORY:$IMAGE_TAG ./worker
+           docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
