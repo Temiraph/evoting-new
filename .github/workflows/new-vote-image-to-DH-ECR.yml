@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'evoting-new/vote/**'
-      - '.github/workflows/new-vote-image-to-DH-ECR.yml
+      - '.github/workflows/new-vote-image-to-DH-ECR.yml'
 
   pull_request:
     branches:
