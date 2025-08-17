@@ -40,7 +40,7 @@ jobs:
                 context: ./result
                 file: ./result/Dockerfile
                 push: true
-                tags: ${{ secrets.DOCKER_USERNAME }}/deployresult:latest
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/deployresult:latest
 
             - name: Build and push worker service
               uses: docker/build-push-action@v4
@@ -48,7 +48,7 @@ jobs:
                 context: ./worker
                 file: ./worker/Dockerfile
                 push: true
-                tags: ${{ secrets.DOCKER_USERNAME }}/deployworker:latest
+                tags: ${{ secrets.DOCKERHUB_USERNAME }}/deployworker:latest
 
 
     deploy-to-ec2:
