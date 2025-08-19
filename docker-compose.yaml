@@ -1,10 +1,8 @@
 version: "3.8"
 services:
    vote:
-    build:
-      context: vote
-      dockerfile: Dockerfile
-      target: dev
+    image: ${DOCKERHUB_USERNAME}/deployvote:${IMAGE_TAG:-latest}
+      
     environment:
       - REDIS_HOST=${REDIS_HOST}
     depends_on:
@@ -16,8 +14,6 @@ services:
       timeout: 10s
       retries: 5
       start_period: 10s
-    volumes:
-      - ./vote:/usr/local/app
     ports: 
     - '8080:80'
     networks:
@@ -25,14 +21,10 @@ services:
       - back-tier
 
    result:
-     build:
-      context: result
-      dockerfile: Dockerfile
+     image: ${DOCKERHUB_USERNAME}/deployresult:${IMAGE_TAG:-latest}
      depends_on:
       db:
         condition: service_healthy
-     volumes:
-       - ./result:/usr/local/app
      environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -46,9 +38,7 @@ services:
       - back-tier
 
    worker:
-     build:
-      context: worker
-      dockerfile: Dockerfile
+     image: ${DOCKERHUB_USERNAME}/deployworker:${IMAGE_TAG:-latest}
      depends_on:
       redis:
         condition: service_healthy
