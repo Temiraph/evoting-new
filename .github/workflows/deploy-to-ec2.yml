@@ -65,5 +65,13 @@ jobs:
 
         - name: copy docker-compose file
           run: scp -o StrictHostKeyChecking=no docker-compose.yaml ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_IP }}:/home/ubuntu/docker-compose.yaml
+
+        - name: Write .env on the server
+          run: |
+           ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_IP }} 'cat > /home/ubuntu/.env << "ENVEOF"
+            ${{ secrets.EC2_ENV_FILE }}
+           ENVEOF
+           '
+          
         - name: run docker-compose up
           run: ssh -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST_IP }} "cd /home/ubuntu && docker compose pull && docker compose up -d"
