@@ -34,7 +34,7 @@ Images are built and pushed automatically using **GitHub Actions** CI/CD pipelin
 
 ## ⚙️ Setup & Deployment
 
-### 1️⃣ Clone the repository
+Clone the repository
 ```bash
 git clone https://github.com/<your-username>/<repo-name>.git
 cd <repo-name>
