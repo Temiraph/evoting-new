@@ -17,9 +17,6 @@ The application consists of the following microservices:
 All services are containerized with **Docker**, orchestrated using **Docker Compose**, and deployed on **AWS EC2**.  
 Images are built and pushed automatically using **GitHub Actions** CI/CD pipeline to **DockerHub** and **Amazon ECR**.
 
-📌 *See the architecture diagram below.*
-
----
 
 ## 🛠️ Tech Stack
 
