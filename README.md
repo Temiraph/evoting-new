@@ -20,7 +20,7 @@ Images are built and pushed automatically using **GitHub Actions** CI/CD pipelin
 
 ## 🛠️ Tech Stack
 
-- **Languages & Frameworks**: Python / Node.js   
+- **Languages & Frameworks**: Python / Node.js / .NET
 - **Databases**: PostgreSQL, Redis  
 - **Containerization**: Docker, Docker Compose  
 - **CI/CD**: GitHub Actions → DockerHub + Amazon ECR  
@@ -33,7 +33,7 @@ Images are built and pushed automatically using **GitHub Actions** CI/CD pipelin
 
 Clone the repository
 ```bash
-git clone https://github.com/<your-username>/<repo-name>.git
+git clone https://github.com/Temiraph/evoting-new.git
 cd <repo-name>
 
 build and run locally (optional)
@@ -44,7 +44,7 @@ This will start all microservices using local Dockerfiles.
 
 CI/CD Pipeline
 
-Each push triggers GitHub Actions.
+Each push to main and workflow triggers GitHub Actions.
 
 GitHub Actions builds Docker images for each microservice.
 
