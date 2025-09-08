@@ -1,4 +1,4 @@
-name: Deploy apps (vote, worker)
+name: Deploy apps (vote and worker)
 
 on:
   workflow_dispatch:
@@ -11,16 +11,16 @@ jobs:
       - name: Write SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY_VOTE }}" > ~/.ssh/key_vote.pem
+          echo "${{ secrets.TERRASSH_KEY }}" > ~/.ssh/key_vote.pem
           chmod 600 ~/.ssh/key_vote.pem
 
       - name: Deploy vote
         env:
-          HOST: ${{ secrets.EC2_HOST_VOTE }}
-          USER: ${{ secrets.EC2_USER }}
-          DH_USER: ${{ secrets.DH_USER }}
-          DH_TOKEN: ${{ secrets.DH_TOKEN }}
-          IMAGE: ${{ secrets.APP_IMAGE_VOTE }}
+          HOST: ${{ secrets.EC2_VOTE }}
+          USER: ${{ secrets.EC2USER }}
+          DH_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE: ${{ secrets.VOTE_IMAGE }}
           PORT: ${{ secrets.VOTE_PORT }}
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/key_vote.pem $USER@$HOST 'bash -s' <<EOSSH
@@ -47,21 +47,21 @@ jobs:
       - name: Write SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY_WORKER }}" > ~/.ssh/key_worker.pem
+          echo "${{ secrets.TERRASSH_KEY }}" > ~/.ssh/key_worker.pem
           chmod 600 ~/.ssh/key_worker.pem
 
       - name: Deploy worker
         env:
-          HOST: ${{ secrets.EC2_HOST_WORKER }}
-          USER: ${{ secrets.EC2_USER }}
-          DH_USER: ${{ secrets.DH_USER }}
-          DH_TOKEN: ${{ secrets.DH_TOKEN }}
-          IMAGE: ${{ secrets.APP_IMAGE_WORKER }}
-          PG_HOST: ${{ secrets.PG_HOST }}
-          PG_PORT: ${{ secrets.PG_PORT }}
-          PG_DB: ${{ secrets.PG_DB }}
-          PG_USER: ${{ secrets.PG_USER }}
-          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          HOST: ${{ secrets.EC2_WORKER }}
+          USER: ${{ secrets.EC2USER }}
+          DH_USER: ${{ secrets.DOCKERHUB_USERNAME }}
+          DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE: ${{ secrets.WORKER_IMAGE }}
+          PG_HOST: ${{ secrets.POST_EC2_PVT }}
+          PG_PORT: ${{ secrets.POST_PORT }}
+          PG_DB: ${{ secrets.POST_DB }}
+          PG_USER: ${{ secrets.POST_USER }}
+          PG_PASSWORD: ${{ secrets.POST_PASSWORD }}
           REDIS_HOST: ${{ secrets.REDIS_HOST }}
           REDIS_PORT: ${{ secrets.REDIS_PORT }}
         run: |
