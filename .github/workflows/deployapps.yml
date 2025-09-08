@@ -1,0 +1,85 @@
+name: Deploy apps (vote, worker)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-vote:
+    name: Vote (public EC2)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY_VOTE }}" > ~/.ssh/key_vote.pem
+          chmod 600 ~/.ssh/key_vote.pem
+
+      - name: Deploy vote
+        env:
+          HOST: ${{ secrets.EC2_HOST_VOTE }}
+          USER: ${{ secrets.EC2_USER }}
+          DH_USER: ${{ secrets.DH_USER }}
+          DH_TOKEN: ${{ secrets.DH_TOKEN }}
+          IMAGE: ${{ secrets.APP_IMAGE_VOTE }}
+          PORT: ${{ secrets.VOTE_PORT }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key_vote.pem $USER@$HOST 'bash -s' <<EOSSH
+          set -euo pipefail
+          if ! command -v docker >/dev/null; then
+            sudo apt update && sudo apt install -y docker.io
+            sudo systemctl enable --now docker
+          fi
+          # Login only if creds provided (private images). Ignore failure if public.
+          if [ -n "$DH_USER" ] && [ -n "$DH_TOKEN" ]; then
+            echo "$DH_TOKEN" | sudo docker login -u "$DH_USER" --password-stdin || true
+          fi
+          sudo docker pull "$IMAGE"
+          sudo docker rm -f vote || true
+          sudo docker run -d --restart always -p ${PORT:-80:80} --name vote "$IMAGE"
+          sudo docker ps
+          EOSSH
+
+  deploy-worker:
+    name: Worker (public EC2)
+    runs-on: ubuntu-latest
+    needs: deploy-vote
+    steps:
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY_WORKER }}" > ~/.ssh/key_worker.pem
+          chmod 600 ~/.ssh/key_worker.pem
+
+      - name: Deploy worker
+        env:
+          HOST: ${{ secrets.EC2_HOST_WORKER }}
+          USER: ${{ secrets.EC2_USER }}
+          DH_USER: ${{ secrets.DH_USER }}
+          DH_TOKEN: ${{ secrets.DH_TOKEN }}
+          IMAGE: ${{ secrets.APP_IMAGE_WORKER }}
+          PG_HOST: ${{ secrets.PG_HOST }}
+          PG_PORT: ${{ secrets.PG_PORT }}
+          PG_DB: ${{ secrets.PG_DB }}
+          PG_USER: ${{ secrets.PG_USER }}
+          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          REDIS_PORT: ${{ secrets.REDIS_PORT }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/key_worker.pem $USER@$HOST 'bash -s' <<EOSSH
+          set -euo pipefail
+          if ! command -v docker >/dev/null; then
+            sudo apt update && sudo apt install -y docker.io
+            sudo systemctl enable --now docker
+          fi
+          if [ -n "$DH_USER" ] && [ -n "$DH_TOKEN" ]; then
+            echo "$DH_TOKEN" | sudo docker login -u "$DH_USER" --password-stdin || true
+          fi
+          sudo docker pull "$IMAGE"
+          sudo docker rm -f worker || true
+          sudo docker run -d --restart always --name worker \
+            -e PGHOST="$PG_HOST" -e PGPORT="${PG_PORT:-5432}" -e PGDATABASE="$PG_DB" \
+            -e PGUSER="$PG_USER" -e PGPASSWORD="$PG_PASSWORD" \
+            -e REDIS_HOST="$REDIS_HOST" -e REDIS_PORT="${REDIS_PORT:-6379}" \
+            "$IMAGE"
+          sudo docker ps
+          EOSSH
